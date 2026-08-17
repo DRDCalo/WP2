@@ -109,8 +109,17 @@ for cellID in cellIDs:
     # print("volumeID:", volumeID)
     vc = volman.lookupContext(volumeID);
     inSeg = seg.position(cellID);
-    outSeg = vc.localToWorld(inSeg);
-    position = outSeg
+    if system == systemEEC:
+        detelement = volman.lookupDetElement(cellID)
+        position = detelement.nominal().localToWorld(inSeg);
+        iSide = coder.get(cellID, "side");
+        if (iSide != 1):
+            # account for the fact that -z endcap is mirrored from the +z one
+            position.SetZ(-position.z());
+            position.SetY(-position.y());
+    else:
+        position = vc.localToWorld(inSeg);
+
     print(f"Position (rho/theta/phi): {position.rho()}, {position.theta()}, {position.phi()}")
     print(f"Position (rho/z/phi): {position.rho()}, {position.z()}, {position.phi()}")
     # Decode and print all fields
@@ -118,5 +127,3 @@ for cellID in cellIDs:
         name = field.name()
         value = coder.get(cellID, name)
         print(f"{name}: {value}")
-
-
