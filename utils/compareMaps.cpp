@@ -235,10 +235,8 @@ Index buildIndex(const std::string& filename) {
     if (mapType == "xtalk") {
       d.hash1 = hashVector<double>(*values1);
       d.hash2 = hashVector<unsigned long>(*neighbours1);
-      // map[id1] = std::make_tuple(i, hashVector<double>(*values1), hashVector<unsigned long>(*neighbours1));
     } else if (mapType == "neighbours") {
-      // map[id1] = std::make_tuple(i, hashVector<unsigned long>(*neighbours1), 0);
-      d.hash1 = hashVector<double>(*values1);
+      d.hash1 = hashVector<unsigned long>(*neighbours1);
     } else if (mapType == "noise") {
       d.noiseLevel = noiseLevel1;
       d.noiseOffset = noiseOffset1;
@@ -391,10 +389,10 @@ bool compareSortedFiles(const std::string& filename1, const std::string& filenam
         return reportDifference(i, "Different vector size for same cellId");
       }
       if (std::memcmp(values1->data(), values2->data(), values1->size() * sizeof(double)) != 0) {
-        return reportDifference(i, "Different neighbour/xtalk vector contents for same cellId");
+        return reportDifference(i, "Different xtalk level contents for same cellId");
       }
       if (std::memcmp(neighbours1->data(), neighbours2->data(), neighbours1->size() * sizeof(unsigned long)) != 0) {
-        return reportDifference(i, "Different neighbour/xtalk vector contents for same cellId");
+        return reportDifference(i, "Different xatlk neighbour contents for same cellId");
       }
     }
 
@@ -443,9 +441,9 @@ bool compareSortedFiles(const std::string& filename1, const std::string& filenam
 // main
 int main(int argc, char** argv) {
   // create argument parser
-  argparse::ArgumentParser parser("compareTrees", "1.0");
+  argparse::ArgumentParser parser("compareMaps", "1.0");
   parser.add_description("Compare noise, neighbour or cross-talk neighbour maps between two files");
-  parser.add_argument("maptype").help("Either noise, neighbour or xtalk").choices("noise", "neighbours", "xtalk");
+  parser.add_argument("maptype").help("Either noise, neighbours or xtalk").choices("noise", "neighbours", "xtalk");
   parser.add_argument("file1").help("The first file to compare");
   parser.add_argument("file2").help("The second file to compare");
   parser.add_argument("-m", "--max-diffs")
